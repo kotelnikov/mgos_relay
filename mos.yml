@@ -1,0 +1,21 @@
+author: Aleksey Kotelnikov <kotelnikov.www@gmail.com>
+type: lib
+description: Mongoose OS Relay library
+version: 1.0
+
+sources:
+  - src
+includes:
+  - include
+filesystem:
+  - fs
+config_schema:
+
+libs:
+
+tags:
+  - relay
+  - c
+  - js
+
+manifest_version: 2020-01-29
