@@ -44,7 +44,7 @@ print('4. Current Relay state is (must be 0):', relay_state);
 
 // touch(timeout) -> changes Relay to opposite state for timeout period (in milliseconds)
 relay_state = relay.touch(5000);
-print('5. Current Relay state is (must bee 1, and after 5 sec. 0):', relay_state);
+print('5. Current Relay state is (must be 1, and after 5 sec. 0):', relay_state);
 
 Timer.set(7000, Timer.REPEAT, function() {
     // state() -> return current Relay state
