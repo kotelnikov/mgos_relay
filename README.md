@@ -1,7 +1,7 @@
 # Mongoose OS Relay library
 
 ## Overview
-Mongoose OS Relay library. It is useful for projects where you have to manage number of relays, led and other stuff like power and reset gpio of the different peripherals.
+The Relay library for [Mongoose OS](https://mongoose-os.com/) framework. It is useful for projects where you have to manage number of relays, leds or other stuff like power and reset gpio of the different peripherals connected to the main micro controller. The library successfully tested on ESP8266 and ESP32 from [Espressif Systems](https://www.espressif.com/).
 
 ## How to use the library
 ### Include library to your project
@@ -100,4 +100,4 @@ enum mgos_app_init_result mgos_app_init(void) {
 ```
 
 ## Misc
-For more details look through the code files, and "examples" folder.
+For additional information look through the code from the library's files, and also files in "examples" folder.
