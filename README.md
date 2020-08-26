@@ -88,9 +88,9 @@ void test_relay = function(void) {
     LOG(LL_INFO, ("4. Current Relay state is (must bee 0): %i", state));
     
     state = mgos_relay_touch(3000, relay);  
-    LOG(LL_INFO, ("5. Current Relay state is (must bee 1, but after 5 sec. 0): %i", state));
+    LOG(LL_INFO, ("5. Current Relay state is (must bee 1, but after 3 sec. 0): %i", state));
 
-    mgos_set_timer(10000, false, relay_callback, NULL);
+    mgos_set_timer(5000, false, relay_callback, NULL);
 };
 
 enum mgos_app_init_result mgos_app_init(void) {
