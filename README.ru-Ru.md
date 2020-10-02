@@ -1,3 +1,6 @@
+[English](https://github.com/kotelnikov/mgos_relay/blob/master/README.md) |
+[Russian](https://github.com/kotelnikov/mgos_relay/blob/master/README.ru-Ru.md)
+
 # Библиотека Реле для Mongoose OS
 
 ## Общие сведения
