@@ -72,7 +72,7 @@ static void relay_callback(void *arg) {
     (void) arg;
 }
 
-void test_relay = function(void) {
+void test_relay(void) {
     relay = mgos_relay_create(RELAY_PIN, NORMALLY_OPEN /* or NORMALLY_CLOSED */);
     
     uint8_t state = mgos_relay_on(relay);
