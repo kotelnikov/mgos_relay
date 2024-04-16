@@ -12,22 +12,26 @@ static void relay_callback(void *arg) {
 }
 
 void test_relay(void) {
-    relay = mgos_relay_create(RELAY_PIN, NORMALLY_OPEN);
     
-    uint8_t state = mgos_relay_on(relay);
-    LOG(LL_INFO, ("1. Current Relay state is (must bee 1): %i", state));
-    
-    state = mgos_relay_off(relay);    
-    LOG(LL_INFO, ("2. Current Relay state is (must bee 0): %i", state));
-    
-    state = mgos_relay_toggle(relay);    
-    LOG(LL_INFO, ("3. Current Relay state is (must bee 1): %i", state));
+    // !!!DEPRECATED!!! Use mgos_relay_initialize instead    
+    // relay = mgos_relay_create(RELAY_PIN, NORMALLY_OPEN);
 
-    state = mgos_relay_toggle(relay);    
-    LOG(LL_INFO, ("4. Current Relay state is (must bee 0): %i", state));
+    relay = mgos_relay_initialize(RELAY_PIN, 0, true);
     
-    state = mgos_relay_touch(3000, relay);  
-    LOG(LL_INFO, ("5. Current Relay state is (must bee 1, but after 5 sec. 0): %i", state));
+    mgos_relay_on(relay);
+    LOG(LL_INFO, ("1. Current Relay state is (must bee 1): %i", mgos_relay_get_state(relay)));
+    
+    mgos_relay_off(relay);
+    LOG(LL_INFO, ("2. Current Relay state is (must bee 0): %i", mgos_relay_get_state(relay)));
+    
+    mgos_relay_toggle(relay);
+    LOG(LL_INFO, ("3. Current Relay state is (must bee 1): %i", mgos_relay_get_state(relay)));
+
+    mgos_relay_toggle(relay);
+    LOG(LL_INFO, ("4. Current Relay state is (must bee 0): %i", mgos_relay_get_state(relay)));
+    
+    mgos_relay_touch(3000, relay);
+    LOG(LL_INFO, ("5. Current Relay state is (must bee 1, but after 5 sec. 0): %i", mgos_relay_get_state(relay)));
 
     mgos_set_timer(10000, false, relay_callback, NULL);
 };

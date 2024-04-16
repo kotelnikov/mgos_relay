@@ -1,26 +1,25 @@
 load("api_relay.js");
 load("api_timer.js");
 
+let led = Relay.create(2, false, true);
 
-let relay = Relay.create(2, Relay.NORMALLY_OPEN);
+led.on();
+print('1. Current Relay state is (must bee on):', led.get_state());
 
-let state = relay.on();
-print('1. Current Relay state is (must bee on):', state);
+led.off();
+print('2. Current Relay state is (must bee off):', led.get_state());
 
-state = relay.off();
-print('2. Current Relay state is (must bee off):', state);
+led.toggle();
+print('3. Current Relay state is (must bee on):', led.get_state());
 
-state = relay.toggle();
-print('3. Current Relay state is (must bee on):', state);
+led.toggle();
+print('4. Current Relay state is (must bee off):', led.get_state());
 
-state = relay.toggle();
-print('4. Current Relay state is (must bee off):', state);
-
-state = relay.touch(5000);
-print('5. Current Relay state is (must bee on, but after 5 sec. off):', state);
+led.touch(5000);
+print('5. Current Relay state is (must bee on, but after 5 sec. off):', led.get_state());
 
 Timer.set(10000, Timer.REPEAT, function() {
-    state = relay.state();
-    print('6. Current Relay state is :', state);
-    relay.close();
+    let state = led.get_state();
+    print('6. Current Relay state is (must bee off) :', led);
+    led.delete();
 }, null);

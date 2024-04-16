@@ -1,5 +1,5 @@
 /*
- * 2020 Aleksey Kotelnikov <kotelnikov.www@gmail.com>
+ * 2024 Aleksey Kotelnikov <kotelnikov.www@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the ""License"");
  * you may not use this file except in compliance with the License.
@@ -14,77 +14,91 @@
  * limitations under the License.
  */
 
-#include "mgos.h"
-#include "mgos_timers.h"
+#include "mgos_debug.h"
 #include "mgos_gpio.h"
+#include "mgos_timers.h"
 #include "mgos_relay.h"
 
 struct mgos_relay {
-    uint8_t gpio;
-    enum    mgos_relay_type type;
-    uint8_t state;
+    const uint8_t gpio;
+    const bool inactive_level;
+    bool current_state;
 };
 
 static void mgos_relay_callback(void *arg);
 
 static void mgos_relay_callback(void *arg) {
+    LOG(LL_DEBUG, ("RELAY: mgos_relay_callback()"));
     struct mgos_relay *r = (struct mgos_relay*)arg;
-    mgos_relay_toggle(r);
-    (void) arg;
+    mgos_relay_off(r);
 };
 
-struct mgos_relay *mgos_relay_create(uint8_t gpio, enum mgos_relay_type type) {
+struct mgos_relay *mgos_relay_initialize(uint8_t gpio, bool inactive_level, bool pull) {
+    LOG(LL_DEBUG, ("RELAY: mgos_relay_initialize()"));
     struct mgos_relay *r = calloc(1, sizeof(*r));
-    if (r == NULL) return NULL;
-    memset(r, 0, sizeof(struct mgos_relay));
-
-    r->gpio = gpio;
-    r->type = type;
-    r->state = 0;
-
-    bool res = mgos_gpio_set_mode(gpio, MGOS_GPIO_MODE_OUTPUT);
-    if (res) {
-        mgos_gpio_write(gpio, type == NORMALLY_OPEN ? 0 : 1);
-        return r;
+    if (r == NULL) {
+        LOG(LL_ERROR, ("RELAY: Error allocating memory"));
+        return NULL;
     }
-    else {
+
+    struct mgos_relay r_init = {gpio, inactive_level, false};
+    memcpy(r, &r_init, sizeof(struct mgos_relay));
+
+    bool res = mgos_gpio_setup_output(gpio, inactive_level);
+    if (res) {
+        res = pull ? 
+            mgos_gpio_set_pull(gpio, inactive_level ? MGOS_GPIO_PULL_UP : MGOS_GPIO_PULL_DOWN) : 
+            mgos_gpio_set_pull(gpio, MGOS_GPIO_PULL_NONE);
+    }
+    if (!res) {
+        LOG(LL_ERROR, ("RELAY: GPIO setup output error"));
         mgos_relay_clear(r);
         return NULL;
-    } 
+    }
+    return r;
+};
+
+bool mgos_relay_get_state(struct mgos_relay *r) {
+    LOG(LL_DEBUG, ("RELAY: mgos_relay_get_state()"));
+    return r->current_state;
+};
+
+void mgos_relay_on(struct mgos_relay *r) {
+    LOG(LL_DEBUG, ("RELAY: mgos_relay_on()"));
+    mgos_gpio_write(r->gpio, !r->inactive_level ? 1 : 0);
+    r->current_state = true;
+};
+
+void mgos_relay_off(struct mgos_relay *r) {
+    LOG(LL_DEBUG, ("RELAY: mgos_relay_off()"));
+    mgos_gpio_write(r->gpio, !r->inactive_level ? 0 : 1);
+    r->current_state = false;
+};
+
+void mgos_relay_toggle(struct mgos_relay *r) {
+    LOG(LL_DEBUG, ("RELAY: mgos_relay_toggle()"));
+    !r->current_state ? mgos_relay_on(r) : mgos_relay_off(r);
+};
+
+void mgos_relay_touch(uint16_t ms, struct mgos_relay *r) {
+    LOG(LL_DEBUG, ("RELAY: mgos_relay_touch()"));
+    mgos_relay_on(r);
+    mgos_set_timer(ms, false, mgos_relay_callback, r);
 };
 
 void mgos_relay_clear(struct mgos_relay *r) {
-  free(r);
-  r = NULL;
-};
-
-uint8_t mgos_relay_get_state(struct mgos_relay *r) {
-    uint8_t res = r->state;
-    return res;
-};
-
-uint8_t mgos_relay_on(struct mgos_relay *r) {
-    mgos_gpio_write(r->gpio, r->type == NORMALLY_OPEN ? 1 : 0);
-    r->state = 1;
-    return mgos_relay_get_state(r);
-};
-
-uint8_t mgos_relay_off(struct mgos_relay *r) {
-    mgos_gpio_write(r->gpio, r->type == NORMALLY_OPEN ? 0 : 1);
-    r->state = 0;
-    return mgos_relay_get_state(r);
-};
-
-uint8_t mgos_relay_toggle(struct mgos_relay *r) {
-    return r->state == 0 ? mgos_relay_on(r) : mgos_relay_off(r);
-};
-
-uint8_t mgos_relay_touch(uint16_t ms, struct mgos_relay *r) {
-    int res = mgos_relay_toggle(r);
-    mgos_set_timer(ms, false, mgos_relay_callback, r);
-    return res;
+    LOG(LL_DEBUG, ("RELAY: mgos_relay_clear()"));
+    free(r);
+    r = NULL;
 };
 
 uint8_t mgos_relay_init(void) {
+    LOG(LL_DEBUG, ("RELAY: mgos_relay_init()"));    
     return true;
+};
+
+// !!!DEPRECATED!!! Use mgos_relay_initialize instead
+struct mgos_relay *mgos_relay_create(uint8_t gpio, enum mgos_relay_type type) {
+    LOG(LL_INFO, ("RELAY: mgos_relay_create() !!!DEPRECATED FN!!! Use mgos_relay_initialize() instead"));
+    return mgos_relay_initialize(gpio, type == NORMALLY_OPEN ? false : true, false);
 };

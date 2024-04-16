@@ -1,5 +1,5 @@
 /*
- * 2020 Aleksey Kotelnikov <kotelnikov.www@gmail.com>
+ * 2024 Aleksey Kotelnikov <kotelnikov.www@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the ""License"");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,22 @@
 extern "C" {
 #endif /* __cplusplus */
 
+struct mgos_relay *mgos_relay_initialize(uint8_t gpio, bool inactive_level, bool pull);
+bool mgos_relay_get_state(struct mgos_relay *r);
+void mgos_relay_on(struct mgos_relay *r);
+void mgos_relay_off(struct mgos_relay *r);
+void mgos_relay_toggle(struct mgos_relay *r);
+void mgos_relay_touch(uint16_t ms, struct mgos_relay *r);
+void mgos_relay_clear(struct mgos_relay *r);
+uint8_t mgos_relay_init(void);
+
+// !!!DEPRECATED!!! Use mgos_relay_initialize instead
 enum mgos_relay_type {
     NORMALLY_OPEN,
     NORMALLY_CLOSE
 };
-
-struct mgos_dht;
-
+// !!!DEPRECATED!!! Use mgos_relay_initialize instead
 struct mgos_relay* mgos_relay_create(uint8_t gpio, enum mgos_relay_type type);
-void mgos_relay_clear(struct mgos_relay *r);
-uint8_t mgos_relay_on(struct mgos_relay *r);
-uint8_t mgos_relay_off(struct mgos_relay *r);
-uint8_t mgos_relay_toggle(struct mgos_relay *r);
-uint8_t mgos_relay_touch(uint16_t ms, struct mgos_relay *r);
-uint8_t mgos_relay_get_state(struct mgos_relay *r);
-uint8_t mgos_relay_init(void);
 
 #ifdef __cplusplus
 }
